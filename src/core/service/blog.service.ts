@@ -4,7 +4,7 @@ import { IBlogRepository } from "../ports/blog.repository";
 export class BlogService {
   constructor(private readonly blogRepository: IBlogRepository) {}
 
-  async getBlog(): Promise<IBlog> {
+  async getBlog(): Promise<IBlog[]> {
     const response = await this.blogRepository.getBlog();
     return response.data;
   }

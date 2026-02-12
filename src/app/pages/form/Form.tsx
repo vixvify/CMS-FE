@@ -1,24 +1,90 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { blogService } from "@/infra/container";
+
+type FormValues = {
+  title: string;
+  content: string;
+  author: string;
+  userId: string;
+};
+
 export default function Form() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormValues>({ mode: "onBlur" });
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const res = await blogService.createBlog(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
-    <div className="flex flex-col justify-center items-center mt-20">
-      <h1 className="font-bold text-5xl">Post Blog</h1>
-      <form className="mt-10 flex flex-col gap-5">
-        <p className="text-xl">Title</p>
-        <input
-          type="text"
-          className="border border-white w-100 h-10 p-3"
-        ></input>
-        <p className="text-xl">Content</p>
-        <textarea className="border border-white w-100 h-25 p-3"></textarea>
-        <p className="text-xl">Author</p>
-        <input
-          type="text"
-          className="border border-white w-100 h-10 p-3"
-        ></input>
-        <button className="text-2xl bg-white p-3 rounded-md text-black">
-          Post
-        </button>
-      </form>
+    <div className="min-h-screen bg-slate-50 pt-32 px-4">
+      <div className="mx-auto w-full max-w-xl">
+        <h1 className="text-center text-4xl font-semibold text-slate-900">
+          Post Blog
+        </h1>
+
+        <form
+          className="mt-10 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-700">Title</label>
+            <input
+              type="text"
+              placeholder="Enter blog title"
+              {...register("title", { required: true })}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+            />
+            {errors.title && (
+              <p className="text-sm text-red-500">Title is required</p>
+            )}
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-700">
+              Content
+            </label>
+            <textarea
+              rows={6}
+              placeholder="Write your content..."
+              {...register("content", { required: true })}
+              className="resize-none rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+            />
+            {errors.content && (
+              <p className="text-sm text-red-500">Content is required</p>
+            )}
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-700">Author</label>
+            <input
+              type="text"
+              placeholder="Your name"
+              {...register("author", { required: true })}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+            />
+            {errors.author && (
+              <p className="text-sm text-red-500">Author is required</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+            disabled={!isValid}
+          >
+            Post blog
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

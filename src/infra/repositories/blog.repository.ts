@@ -4,8 +4,8 @@ import { IBlogRepository } from "@/core/ports/blog.repository";
 import { IBlog, ICreateBlog } from "@/core/domain/blog";
 
 export class BlogRepository implements IBlogRepository {
-  async getBlog(): Promise<ApiResponse<IBlog>> {
-    const response = await http.get<ApiResponse<IBlog>>(`/blog`);
+  async getBlog(): Promise<ApiResponse<IBlog[]>> {
+    const response = await http.get<ApiResponse<IBlog[]>>(`/blog`);
     return response.data;
   }
 
