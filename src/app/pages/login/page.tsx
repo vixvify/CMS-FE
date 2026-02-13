@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type FormValues = {
-  username: string;
   email: string;
   password: string;
 };
@@ -34,10 +33,10 @@ export default function Register() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await authservice.signup(data);
+      await authservice.login(data);
       setSnackbar({
         open: true,
-        message: "Sign up success",
+        message: "Log in success",
         severity: "success",
       });
       router.push("/");
@@ -45,7 +44,7 @@ export default function Register() {
       console.error(err);
       setSnackbar({
         open: true,
-        message: "Sign up failed",
+        message: "Log in failed",
         severity: "error",
       });
     }
@@ -54,28 +53,13 @@ export default function Register() {
     <div className="min-h-screen bg-slate-50 pt-40 px-4">
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
-          Sign up
+          Log in
         </h1>
 
         <form
           className="mt-10 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">
-              Username
-            </label>
-            <input
-              type="text"
-              placeholder="Your Username"
-              {...register("username", { required: true })}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-            />
-            {errors.username && (
-              <p className="text-sm text-red-500">Username is required</p>
-            )}
-          </div>
-
           <div className="mt-5 flex flex-col gap-2">
             <label className="text-sm font-medium text-slate-700">Email</label>
             <input
@@ -109,15 +93,15 @@ export default function Register() {
             className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
             disabled={!isValid}
           >
-            Sign up
+            Log in
           </button>
           <div className="flex justify-center items-center gap-5 mt-7">
             <p className="text-sm font-medium text-slate-700">
-              Have any account
+              Don&apos;t Have any account
             </p>
-            <Link href={"/pages/login"}>
+            <Link href={"/pages/register"}>
               <p className="text-sm font-medium text-slate-700 hover:text-black">
-                Login
+                Sign up
               </p>
             </Link>
           </div>
