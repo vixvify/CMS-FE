@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { authservice } from "@/infra/container";
 import { Snackbar, Alert } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 type FormValues = {
   username: string;
@@ -28,18 +29,18 @@ export default function Register() {
     message: "",
     severity: "success",
   });
+  const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
     try {
       const res = await authservice.signup(data);
-      if (!res) {
-        return;
-      }
       setSnackbar({
         open: true,
         message: "Sign up success",
         severity: "success",
       });
+      console.log(res);
+      router.push("/");
     } catch (err) {
       console.error(err);
       setSnackbar({
@@ -61,7 +62,9 @@ export default function Register() {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Title</label>
+            <label className="text-sm font-medium text-slate-700">
+              Username
+            </label>
             <input
               type="text"
               placeholder="Your Username"
@@ -74,7 +77,7 @@ export default function Register() {
           </div>
 
           <div className="mt-5 flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Author</label>
+            <label className="text-sm font-medium text-slate-700">Email</label>
             <input
               type="text"
               placeholder="Your Email"
@@ -87,7 +90,9 @@ export default function Register() {
           </div>
 
           <div className="mt-5 flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Author</label>
+            <label className="text-sm font-medium text-slate-700">
+              Password
+            </label>
             <input
               type="password"
               placeholder="Enter Password"

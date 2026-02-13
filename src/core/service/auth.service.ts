@@ -1,4 +1,4 @@
-import { ICreateUser, ILogin, IUser } from "../domain/auth";
+import { ICreateUser, ILogin, IUser, ILoginResponse } from "../domain/auth";
 import { IAuthRepository } from "../ports/auth.repository";
 
 export class AuthService {
@@ -9,7 +9,7 @@ export class AuthService {
     return response.data;
   }
 
-  async login(data: ILogin): Promise<IUser> {
+  async login(data: ILogin): Promise<ILoginResponse> {
     const response = await this.authRepository.login(data);
     return response.data;
   }

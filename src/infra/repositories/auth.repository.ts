@@ -1,7 +1,7 @@
 import http from "@/lib/http";
 import { ApiResponse } from "../interface/response";
 import { IAuthRepository } from "@/core/ports/auth.repository";
-import { ICreateUser, ILogin, IUser } from "@/core/domain/auth";
+import { ICreateUser, ILogin, IUser, ILoginResponse } from "@/core/domain/auth";
 
 export class AuthRepository implements IAuthRepository {
   async signup(data: ICreateUser): Promise<ApiResponse<IUser>> {
@@ -9,8 +9,11 @@ export class AuthRepository implements IAuthRepository {
     return response.data;
   }
 
-  async login(data: ILogin): Promise<ApiResponse<IUser>> {
-    const response = await http.post<ApiResponse<IUser>>(`/auth/login`, data);
+  async login(data: ILogin): Promise<ApiResponse<ILoginResponse>> {
+    const response = await http.post<ApiResponse<ILoginResponse>>(
+      `/auth/login`,
+      data,
+    );
     return response.data;
   }
 }
