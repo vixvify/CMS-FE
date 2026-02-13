@@ -1,16 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { blogService } from "@/infra/container";
 
 type FormValues = {
-  title: string;
-  content: string;
-  author: string;
-  userId: string;
+  username: string;
+  email: string;
+  password: string;
 };
 
-export default function Form() {
+export default function Register() {
   const {
     register,
     handleSubmit,
@@ -19,16 +17,15 @@ export default function Form() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await blogService.createBlog(data);
     } catch (err) {
       console.error(err);
     }
   };
   return (
-    <div className="min-h-screen bg-slate-50 pt-40  px-4">
+    <div className="min-h-screen bg-slate-50 pt-40 px-4">
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
-          Post Blog
+          Sign up
         </h1>
 
         <form
@@ -39,27 +36,12 @@ export default function Form() {
             <label className="text-sm font-medium text-slate-700">Title</label>
             <input
               type="text"
-              placeholder="Enter blog title"
-              {...register("title", { required: true })}
+              placeholder="Your Username"
+              {...register("username", { required: true })}
               className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
-            {errors.title && (
-              <p className="text-sm text-red-500">Title is required</p>
-            )}
-          </div>
-
-          <div className="mt-5 flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">
-              Content
-            </label>
-            <textarea
-              rows={6}
-              placeholder="Write your content..."
-              {...register("content", { required: true })}
-              className="resize-none rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-            />
-            {errors.content && (
-              <p className="text-sm text-red-500">Content is required</p>
+            {errors.username && (
+              <p className="text-sm text-red-500">Username is required</p>
             )}
           </div>
 
@@ -67,12 +49,25 @@ export default function Form() {
             <label className="text-sm font-medium text-slate-700">Author</label>
             <input
               type="text"
-              placeholder="Your name"
-              {...register("author", { required: true })}
+              placeholder="Your Email"
+              {...register("email", { required: true })}
               className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
-            {errors.author && (
-              <p className="text-sm text-red-500">Author is required</p>
+            {errors.email && (
+              <p className="text-sm text-red-500">Email is required</p>
+            )}
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-700">Author</label>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              {...register("password", { required: true })}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500">Password is required</p>
             )}
           </div>
 

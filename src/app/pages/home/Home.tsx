@@ -8,7 +8,7 @@ type Homeprops = {
 
 export default function Home({ blogs }: Homeprops) {
   return (
-    <div className="min-h-screen py-24 pt-35">
+    <div className="min-h-screen py-24 pt-40">
       <div className="mx-auto max-w-5xl px-6">
         <h1 className="text-center text-4xl font-semibold tracking-tight text-slate-900">
           Blog App by Next.js & Golang
