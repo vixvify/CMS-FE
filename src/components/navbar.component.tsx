@@ -22,20 +22,31 @@ export default function Navbarcomponent() {
             </Link>
           </li>
 
-          <li>
-            <Link
-              href="/pages/form"
-              className="transition hover:text-slate-900"
-            >
-              Post
-            </Link>
-          </li>
+          {user && !loading && (
+            <li>
+              <Link
+                href="/pages/form"
+                className="transition hover:text-slate-900"
+              >
+                Post
+              </Link>
+            </li>
+          )}
 
           {!user && !loading && (
             <li>
               <Link href={"/pages/register"}>
                 <button className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
                   Sign up
+                </button>
+              </Link>
+            </li>
+          )}
+          {!user && !loading && (
+            <li>
+              <Link href={"/pages/login"}>
+                <button className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
+                  Log in
                 </button>
               </Link>
             </li>

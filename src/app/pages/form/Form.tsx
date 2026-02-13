@@ -2,12 +2,22 @@
 
 import { useForm } from "react-hook-form";
 import { blogService } from "@/infra/container";
+import { useAuthStore } from "@/store/auth";
+import { Snackbar, Alert } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type FormValues = {
   title: string;
   content: string;
   author: string;
   userId: string;
+};
+
+type SnackbarState = {
+  open: boolean;
+  message: string;
+  severity: "success" | "error";
 };
 
 export default function Form() {
@@ -17,11 +27,34 @@ export default function Form() {
     formState: { errors, isValid },
   } = useForm<FormValues>({ mode: "onBlur" });
 
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const router = useRouter();
+
+  const { user } = useAuthStore();
+
   const onSubmit = async (data: FormValues) => {
+    if (!user) {
+      return;
+    }
     try {
-      const res = await blogService.createBlog(data);
+      await blogService.createBlog({ ...data, userId: user.id });
+      setSnackbar({
+        open: true,
+        message: "Post success",
+        severity: "success",
+      });
+      router.push("/");
     } catch (err) {
       console.error(err);
+      setSnackbar({
+        open: true,
+        message: "Post failed",
+        severity: "error",
+      });
     }
   };
   return (
@@ -85,6 +118,21 @@ export default function Form() {
           </button>
         </form>
       </div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       set({
-        user: res.data,
+        user: res.data.data,
         loading: false,
       });
     } catch (err) {
