@@ -1,11 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { authservice } from "@/infra/container";
+import { Snackbar, Alert } from "@mui/material";
 
 type FormValues = {
   username: string;
   email: string;
   password: string;
+};
+
+type SnackbarState = {
+  open: boolean;
+  message: string;
+  severity: "success" | "error";
 };
 
 export default function Register() {
@@ -14,11 +23,30 @@ export default function Register() {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormValues>({ mode: "onBlur" });
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const onSubmit = async (data: FormValues) => {
     try {
+      const res = await authservice.signup(data);
+      if (!res) {
+        return;
+      }
+      setSnackbar({
+        open: true,
+        message: "Sign up success",
+        severity: "success",
+      });
     } catch (err) {
       console.error(err);
+      setSnackbar({
+        open: true,
+        message: "Sign up failed",
+        severity: "error",
+      });
     }
   };
   return (
@@ -73,13 +101,28 @@ export default function Register() {
 
           <button
             type="submit"
-            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
             disabled={!isValid}
           >
-            Post blog
+            Sign up
           </button>
         </form>
       </div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
