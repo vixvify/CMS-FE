@@ -2,37 +2,31 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
-import Swal, { SweetAlertOptions } from "sweetalert2";
+import Swal from "sweetalert2";
 import { authservice } from "@/infra/container";
 import { Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
+import {
+  SnackbarState,
+  defaultSnackbar,
+  confirmAlertStyle,
+} from "@/core/constants/alert";
+import {
+  loginSuccessText,
+  loginFailedText,
+  confirmLogoutText,
+} from "@/core/constants/auth";
 
 export default function Navbarcomponent() {
   const { user, setUser } = useAuthStore();
 
   const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: "",
-    severity: "success",
+    ...defaultSnackbar,
   });
-
-  const confirmAlertStyle: SweetAlertOptions = {
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-  };
 
   const confirmLogout = () => {
     Swal.fire({
-      title: "Log out?",
-      confirmButtonText: "Yes, Logout!",
+      ...confirmLogoutText,
       ...confirmAlertStyle,
     }).then((result) => {
       if (result.isConfirmed) {
@@ -46,16 +40,12 @@ export default function Navbarcomponent() {
       await authservice.logout();
       setUser(null);
       setSnackbar({
-        open: true,
-        message: "Log out success",
-        severity: "success",
+        ...loginSuccessText,
       });
     } catch (err) {
       console.error(err);
       setSnackbar({
-        open: true,
-        message: "Log out failed",
-        severity: "error",
+        ...loginFailedText,
       });
     }
   };

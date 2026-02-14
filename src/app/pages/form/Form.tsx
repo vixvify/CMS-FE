@@ -8,38 +8,25 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingOverlay from "@/components/loading.component";
 import { useEffect } from "react";
-
-type FormValues = {
-  title: string;
-  content: string;
-  author: string;
-  userId: string;
-};
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
+import { SnackbarState, defaultSnackbar } from "@/core/constants/alert";
+import { postFailedText, postSuccessText } from "@/core/constants/blog";
+import { ICreateBlog } from "@/core/domain/blog";
 
 export default function Form() {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<FormValues>({ mode: "onBlur" });
+  } = useForm<ICreateBlog>({ mode: "onBlur" });
 
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
   const router = useRouter();
-
   const { user } = useAuthStore();
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    ...defaultSnackbar,
+  });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: ICreateBlog) => {
     if (!user) {
       return;
     }
@@ -48,18 +35,14 @@ export default function Form() {
       await blogService.createBlog(data);
       setLoading(false);
       setSnackbar({
-        open: true,
-        message: "Post success",
-        severity: "success",
+        ...postSuccessText,
       });
       router.push("/");
     } catch (err) {
       console.error(err);
       setLoading(false);
       setSnackbar({
-        open: true,
-        message: "Post failed",
-        severity: "error",
+        ...postFailedText,
       });
     }
   };
@@ -75,6 +58,21 @@ export default function Form() {
   return (
     <div className="min-h-screen bg-slate-50 pt-40  px-4">
       {loading && <LoadingOverlay />}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
           Post Blog
@@ -134,21 +132,6 @@ export default function Form() {
           </button>
         </form>
       </div>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-      >
-        <Alert
-          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

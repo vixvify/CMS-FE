@@ -8,59 +8,61 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
 import LoadingOverlay from "@/components/loading.component";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
+import { ILogin } from "@/core/domain/auth";
+import { SnackbarState, defaultSnackbar } from "@/core/constants/alert";
+import { loginSuccessText, loginFailedText } from "@/core/constants/auth";
 
 export default function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<FormValues>({ mode: "onBlur" });
+  } = useForm<ILogin>({ mode: "onBlur" });
 
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: "",
-    severity: "success",
+    ...defaultSnackbar,
   });
   const router = useRouter();
   const { setUser } = useAuthStore();
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: ILogin) => {
     setLoading(true);
     try {
       const user = await authservice.login(data);
       setLoading(false);
       setUser(user);
       setSnackbar({
-        open: true,
-        message: "Log in success",
-        severity: "success",
+        ...loginSuccessText,
       });
       router.push("/");
     } catch (err) {
       console.error(err);
       setLoading(false);
       setSnackbar({
-        open: true,
-        message: "Log in failed",
-        severity: "error",
+        ...loginFailedText,
       });
     }
   };
+
   return (
     <div className="min-h-screen bg-slate-50 pt-40 px-4">
       {loading && <LoadingOverlay />}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
           Log in
@@ -117,21 +119,6 @@ export default function Register() {
           </div>
         </form>
       </div>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-      >
-        <Alert
-          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

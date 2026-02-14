@@ -2,6 +2,22 @@
 
 import { IBlog } from "@/core/domain/blog";
 import { useAuthStore } from "@/store/auth";
+import Swal from "sweetalert2";
+import { blogService } from "@/infra/container";
+import LoadingOverlay from "@/components/loading.component";
+import { Snackbar, Alert } from "@mui/material";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  SnackbarState,
+  confirmAlertStyle,
+  defaultSnackbar,
+} from "@/core/constants/alert";
+import {
+  deleteSuccessText,
+  deleteFailedText,
+  confirmDeleteText,
+} from "@/core/constants/blog";
 
 type Homeprops = {
   blogs: IBlog[];
@@ -9,9 +25,59 @@ type Homeprops = {
 
 export default function Home({ blogs }: Homeprops) {
   const { user } = useAuthStore();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    ...defaultSnackbar,
+  });
+
+  const confirmDelete = (id: string) => {
+    Swal.fire({
+      ...confirmDeleteText,
+      ...confirmAlertStyle,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDelete(id);
+      }
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    setLoading(true);
+    try {
+      await blogService.deleteBlog(id);
+      setLoading(false);
+      setSnackbar({
+        ...deleteSuccessText,
+      });
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      setSnackbar({
+        ...deleteFailedText,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen py-24 pt-40">
+      {loading && <LoadingOverlay />}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <div className="mx-auto max-w-5xl px-6">
         <h1 className="text-center text-4xl font-semibold tracking-tight text-slate-900">
           Blog App by Next.js & Golang
@@ -60,7 +126,10 @@ export default function Home({ blogs }: Homeprops) {
                             Edit
                           </a>
 
-                          <button className="rounded-md bg-red-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-600">
+                          <button
+                            className="rounded-md bg-red-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-600"
+                            onClick={() => confirmDelete(e.id)}
+                          >
                             Delete
                           </button>
                         </div>

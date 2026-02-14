@@ -11,5 +11,4 @@ export interface ICreateBlog {
   title: string;
   content: string;
   author: string;
-  user_id: string;
 }

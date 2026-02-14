@@ -6,52 +6,53 @@ import { authservice } from "@/infra/container";
 import { Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-type FormValues = {
-  username: string;
-  email: string;
-  password: string;
-};
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
+import { ICreateUser } from "@/core/domain/auth";
+import { SnackbarState, defaultSnackbar } from "@/core/constants/alert";
+import { signupSuccessText, signupFailedText } from "@/core/constants/auth";
 
 export default function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<FormValues>({ mode: "onBlur" });
+  } = useForm<ICreateUser>({ mode: "onBlur" });
+
   const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    message: "",
-    severity: "success",
+    ...defaultSnackbar,
   });
   const router = useRouter();
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: ICreateUser) => {
     try {
       await authservice.signup(data);
       setSnackbar({
-        open: true,
-        message: "Sign up success",
-        severity: "success",
+        ...signupSuccessText,
       });
       router.push("/");
     } catch (err) {
       console.error(err);
       setSnackbar({
-        open: true,
-        message: "Sign up failed",
-        severity: "error",
+        ...signupFailedText,
       });
     }
   };
   return (
     <div className="min-h-screen bg-slate-50 pt-40 px-4">
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
           Sign up
@@ -123,21 +124,6 @@ export default function Register() {
           </div>
         </form>
       </div>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-      >
-        <Alert
-          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
