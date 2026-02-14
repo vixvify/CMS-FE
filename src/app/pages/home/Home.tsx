@@ -98,7 +98,7 @@ export default function Home({ blogs }: Homeprops) {
                   </p>
                   <div className="mt-2">
                     <a
-                      href={`/blog/${e.id}`}
+                      href={`/pages/blog/${e.id}`}
                       className="items-center text-sm font-medium text-slate-800 hover:underline"
                     >
                       Read more
