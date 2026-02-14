@@ -7,6 +7,7 @@ import { Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingOverlay from "@/components/loading.component";
+import { useEffect } from "react";
 
 type FormValues = {
   title: string;
@@ -44,7 +45,7 @@ export default function Form() {
     }
     setLoading(true);
     try {
-      await blogService.createBlog({ ...data, userId: user.id });
+      await blogService.createBlog(data);
       setLoading(false);
       setSnackbar({
         open: true,
@@ -62,6 +63,15 @@ export default function Form() {
       });
     }
   };
+
+  useEffect(() => {
+    if (!user) {
+      router.replace("/pages/login");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
+
   return (
     <div className="min-h-screen bg-slate-50 pt-40  px-4">
       {loading && <LoadingOverlay />}

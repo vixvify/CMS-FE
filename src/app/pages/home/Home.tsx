@@ -1,12 +1,15 @@
 "use client";
 
 import { IBlog } from "@/core/domain/blog";
+import { useAuthStore } from "@/store/auth";
 
 type Homeprops = {
   blogs: IBlog[];
 };
 
 export default function Home({ blogs }: Homeprops) {
+  const { user } = useAuthStore();
+
   return (
     <div className="min-h-screen py-24 pt-40">
       <div className="mx-auto max-w-5xl px-6">
@@ -41,12 +44,27 @@ export default function Home({ blogs }: Homeprops) {
                       <span>{e.author}</span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-slate-700">Date</span>
-                      <time>
-                        {" "}
-                        {new Date(e.created_at).toLocaleString("th-TH")}
-                      </time>
+                    <div className="flex items-center gap-5">
+                      <div className="flex gap-2">
+                        <span className="font-medium text-slate-700">Date</span>
+                        <time>
+                          {new Date(e.created_at).toLocaleString("th-TH")}
+                        </time>
+                      </div>
+                      {user && user?.id === e.user_id && (
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/blog/edit/${e.id}`}
+                            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                          >
+                            Edit
+                          </a>
+
+                          <button className="rounded-md bg-red-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-600">
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </article>

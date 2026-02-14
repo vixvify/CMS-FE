@@ -4,12 +4,12 @@ export interface IBlog {
   content: string;
   author: string;
   created_at: string;
-  userId: string;
+  user_id: string;
 }
 
 export interface ICreateBlog {
   title: string;
   content: string;
   author: string;
-  userId: string;
+  user_id: string;
 }

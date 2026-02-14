@@ -4,9 +4,23 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
 import Swal, { SweetAlertOptions } from "sweetalert2";
 import { authservice } from "@/infra/container";
+import { Snackbar, Alert } from "@mui/material";
+import { useState } from "react";
+
+type SnackbarState = {
+  open: boolean;
+  message: string;
+  severity: "success" | "error";
+};
 
 export default function Navbarcomponent() {
   const { user, setUser } = useAuthStore();
+
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const confirmAlertStyle: SweetAlertOptions = {
     icon: "warning",
@@ -31,17 +45,38 @@ export default function Navbarcomponent() {
     try {
       await authservice.logout();
       setUser(null);
-      Swal.fire({
-        title: "Logged out successfully",
-        icon: "success",
+      setSnackbar({
+        open: true,
+        message: "Log out success",
+        severity: "success",
       });
     } catch (err) {
       console.error(err);
+      setSnackbar({
+        open: true,
+        message: "Log out failed",
+        severity: "error",
+      });
     }
   };
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
