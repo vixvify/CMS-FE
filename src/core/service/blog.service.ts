@@ -1,4 +1,4 @@
-import { IBlog, ICreateBlog } from "../domain/blog";
+import { IBlog, ICreateBlog, IUpdateBlog } from "../domain/blog";
 import { IBlogRepository } from "../ports/blog.repository";
 
 export class BlogService {
@@ -6,6 +6,11 @@ export class BlogService {
 
   async getBlog(): Promise<IBlog[]> {
     const response = await this.blogRepository.getBlog();
+    return response.data;
+  }
+
+  async getBlogByID(id: string): Promise<IBlog> {
+    const response = await this.blogRepository.getBlogByID(id);
     return response.data;
   }
 
@@ -19,8 +24,8 @@ export class BlogService {
     return response.data;
   }
 
-  async updateBlog(id: string): Promise<IBlog> {
-    const response = await this.blogRepository.updateBlog(id);
+  async updateBlog(id: string, data: IUpdateBlog): Promise<IBlog> {
+    const response = await this.blogRepository.updateBlog(id, data);
     return response.data;
   }
 }

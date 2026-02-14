@@ -12,3 +12,9 @@ export interface ICreateBlog {
   content: string;
   author: string;
 }
+
+export interface IUpdateBlog {
+  title: string;
+  content: string;
+  author: string;
+}

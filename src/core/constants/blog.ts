@@ -28,3 +28,15 @@ export const postFailedText: SnackbarState = {
   message: "Post failed",
   severity: "error",
 };
+
+export const updateSuccessText: SnackbarState = {
+  open: true,
+  message: "Update success",
+  severity: "success",
+};
+
+export const updateFailedText: SnackbarState = {
+  open: true,
+  message: "Update failed",
+  severity: "error",
+};

@@ -1,11 +1,16 @@
 import http from "@/lib/http";
 import { ApiResponse } from "../interface/response";
 import { IBlogRepository } from "@/core/ports/blog.repository";
-import { IBlog, ICreateBlog } from "@/core/domain/blog";
+import { IBlog, ICreateBlog, IUpdateBlog } from "@/core/domain/blog";
 
 export class BlogRepository implements IBlogRepository {
   async getBlog(): Promise<ApiResponse<IBlog[]>> {
     const response = await http.get<ApiResponse<IBlog[]>>(`/blog`);
+    return response.data;
+  }
+
+  async getBlogByID(id: string): Promise<ApiResponse<IBlog>> {
+    const response = await http.get<ApiResponse<IBlog>>(`/blog/${id}`);
     return response.data;
   }
 
@@ -19,8 +24,8 @@ export class BlogRepository implements IBlogRepository {
     return response.data;
   }
 
-  async updateBlog(id: string): Promise<ApiResponse<IBlog>> {
-    const response = await http.put<ApiResponse<IBlog>>(`/blog/${id}`);
+  async updateBlog(id: string, data: IUpdateBlog): Promise<ApiResponse<IBlog>> {
+    const response = await http.put<ApiResponse<IBlog>>(`/blog/${id}`, data);
     return response.data;
   }
 }

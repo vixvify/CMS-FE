@@ -8,6 +8,7 @@ import LoadingOverlay from "@/components/loading.component";
 import { Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   SnackbarState,
   confirmAlertStyle,
@@ -119,12 +120,12 @@ export default function Home({ blogs }: Homeprops) {
                       </div>
                       {user && user?.id === e.user_id && (
                         <div className="flex items-center gap-2">
-                          <a
-                            href={`/blog/edit/${e.id}`}
+                          <Link
+                            href={`/pages/update/${e.id}`}
                             className="rounded-md border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
                           >
                             Edit
-                          </a>
+                          </Link>
 
                           <button
                             className="rounded-md bg-red-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-600"
