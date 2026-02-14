@@ -8,7 +8,6 @@ type User = {
 
 type AuthState = {
   user: User | null;
-  loading: boolean;
 
   checkAuth: () => Promise<void>;
   setUser: (u: User | null) => void;
@@ -16,12 +15,10 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  loading: true,
 
   setUser: (u) => set({ user: u }),
 
   checkAuth: async () => {
-    console.log("CHECK AUTH RUN (client)", typeof window);
     try {
       const res = await http.get("/auth/me", {
         headers: {
@@ -31,12 +28,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       set({
         user: res.data.data,
-        loading: false,
       });
     } catch (err) {
+      console.error(err);
       set({
         user: null,
-        loading: false,
       });
     }
   },

@@ -16,4 +16,9 @@ export class AuthRepository implements IAuthRepository {
     );
     return response.data;
   }
+
+  async logout(): Promise<ApiResponse<void>> {
+    const response = await http.post<ApiResponse<void>>(`/auth/logout`);
+    return response.data;
+  }
 }

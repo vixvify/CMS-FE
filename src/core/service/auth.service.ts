@@ -13,4 +13,9 @@ export class AuthService {
     const response = await this.authRepository.login(data);
     return response.data;
   }
+
+  async logout(): Promise<void> {
+    const response = await this.authRepository.logout();
+    return response.data;
+  }
 }

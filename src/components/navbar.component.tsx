@@ -2,9 +2,44 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth";
+import Swal, { SweetAlertOptions } from "sweetalert2";
+import { authservice } from "@/infra/container";
 
 export default function Navbarcomponent() {
-  const { user, loading } = useAuthStore();
+  const { user, setUser } = useAuthStore();
+
+  const confirmAlertStyle: SweetAlertOptions = {
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+  };
+
+  const confirmLogout = () => {
+    Swal.fire({
+      title: "Log out?",
+      confirmButtonText: "Yes, Logout!",
+      ...confirmAlertStyle,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+      }
+    });
+  };
+
+  const logout = async () => {
+    try {
+      await authservice.logout();
+      setUser(null);
+      Swal.fire({
+        title: "Logged out successfully",
+        icon: "success",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
@@ -22,7 +57,7 @@ export default function Navbarcomponent() {
             </Link>
           </li>
 
-          {user && !loading && (
+          {user && (
             <li>
               <Link
                 href="/pages/form"
@@ -33,16 +68,7 @@ export default function Navbarcomponent() {
             </li>
           )}
 
-          {!user && !loading && (
-            <li>
-              <Link href={"/pages/register"}>
-                <button className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
-                  Sign up
-                </button>
-              </Link>
-            </li>
-          )}
-          {!user && !loading && (
+          {!user && (
             <li>
               <Link href={"/pages/login"}>
                 <button className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
@@ -52,13 +78,14 @@ export default function Navbarcomponent() {
             </li>
           )}
 
-          {user && !loading && (
+          {user && (
             <li>
-              <Link href={"/pages/register"}>
-                <button className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
-                  Logout
-                </button>
-              </Link>
+              <button
+                className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
+                onClick={confirmLogout}
+              >
+                Logout
+              </button>
             </li>
           )}
         </ul>

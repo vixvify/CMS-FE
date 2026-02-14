@@ -6,6 +6,8 @@ import { authservice } from "@/infra/container";
 import { Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthStore } from "@/store/auth";
+import LoadingOverlay from "@/components/loading.component";
 
 type FormValues = {
   email: string;
@@ -24,16 +26,22 @@ export default function Register() {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormValues>({ mode: "onBlur" });
+
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: "",
     severity: "success",
   });
   const router = useRouter();
+  const { setUser } = useAuthStore();
 
   const onSubmit = async (data: FormValues) => {
+    setLoading(true);
     try {
-      await authservice.login(data);
+      const user = await authservice.login(data);
+      setLoading(false);
+      setUser(user);
       setSnackbar({
         open: true,
         message: "Log in success",
@@ -42,6 +50,7 @@ export default function Register() {
       router.push("/");
     } catch (err) {
       console.error(err);
+      setLoading(false);
       setSnackbar({
         open: true,
         message: "Log in failed",
@@ -51,6 +60,7 @@ export default function Register() {
   };
   return (
     <div className="min-h-screen bg-slate-50 pt-40 px-4">
+      {loading && <LoadingOverlay />}
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
           Log in
@@ -90,7 +100,7 @@ export default function Register() {
 
           <button
             type="submit"
-            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
+            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
             disabled={!isValid}
           >
             Log in

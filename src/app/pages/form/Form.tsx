@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/auth";
 import { Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import LoadingOverlay from "@/components/loading.component";
 
 type FormValues = {
   title: string;
@@ -27,6 +28,7 @@ export default function Form() {
     formState: { errors, isValid },
   } = useForm<FormValues>({ mode: "onBlur" });
 
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: "",
@@ -40,8 +42,10 @@ export default function Form() {
     if (!user) {
       return;
     }
+    setLoading(true);
     try {
       await blogService.createBlog({ ...data, userId: user.id });
+      setLoading(false);
       setSnackbar({
         open: true,
         message: "Post success",
@@ -50,6 +54,7 @@ export default function Form() {
       router.push("/");
     } catch (err) {
       console.error(err);
+      setLoading(false);
       setSnackbar({
         open: true,
         message: "Post failed",
@@ -59,6 +64,7 @@ export default function Form() {
   };
   return (
     <div className="min-h-screen bg-slate-50 pt-40  px-4">
+      {loading && <LoadingOverlay />}
       <div className="mx-auto w-full max-w-xl">
         <h1 className="text-center text-4xl font-semibold text-slate-900">
           Post Blog

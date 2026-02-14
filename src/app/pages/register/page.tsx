@@ -106,7 +106,7 @@ export default function Register() {
 
           <button
             type="submit"
-            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
+            className="mt-8 w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
             disabled={!isValid}
           >
             Sign up
