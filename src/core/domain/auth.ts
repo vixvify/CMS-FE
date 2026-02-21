@@ -20,5 +20,5 @@ export interface ILogin {
 export interface ILoginResponse {
   id: string;
   email: string;
-  password: string;
+  username: string;
 }

@@ -3,6 +3,7 @@ import http from "@/lib/http";
 
 type User = {
   id: string;
+  username: string;
   email: string;
 };
 
